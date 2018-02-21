@@ -1,14 +1,7 @@
-
-* {
-  box-sizing: border-box;
-}
-table tr td {
-  border: thin solid #ccc;
-  border-bottom: none;
-  width: 10em;
-  text-align: left;
+.app-container {
+  h1 {
+    font-size: 2.5em;
+    margin: 2% 0;
+  }
 }
 
-table tr:last-child td {
-  border-bottom: thin solid #ccc;
-}

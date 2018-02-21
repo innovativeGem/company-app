@@ -3,7 +3,23 @@
 $font-family: "Roboto Mono", monospace;
 $font-size: 12px;
 
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: $font-family;
   font-size: $font-size;
+}
+
+table tr td {
+  border: thin solid #ccc;
+  border-bottom: none;
+  width: 10em;
+  text-align: left;
+}
+
+table tr:last-child td {
+  border-bottom: thin solid #ccc;
 }
