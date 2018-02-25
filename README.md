@@ -1,27 +1,45 @@
-# MySeedApp
+# Company Hierarchy App
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.4.0.
+Created an app to display employee hierarchy for a small company.
 
-## Development server
+### Tech
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+* [Angular CLI](https://cli.angular.io/) - HTML enhanced for web apps!
+* [node.js](https://nodejs.org/en/) - fast node.js network app framework
+* [SCSS](http://sass-lang.com/install) - CSS preprocessor 
 
-## Code scaffolding
+### Installation
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Open Terminal/Command prompt on your system.
 
-## Build
+Install the dependencies and devDependencies and start the server.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+```sh
+$ git clone https://github.com/innovativeGem/company-app.git
+$ npm install
+$ ng serve
+```
 
-## Running unit tests
+For production environments...
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```sh
+$ ng build
+```
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+### Accomplishment
 
-## Further help
+As per the project brief, i have achieved following 
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+- Used Angular CLI to create a new Company App project.
+- Loaded Mock JSON data into Company application.
+- Company App displays employee hierarchy for the given company data.
+- CEO displayed at the top in the first row, followed by managers in second column and workers in third.
+- An employee without a manager can also be added.
+- An invalid company manager can also be added in a seperate table.
+- Successfully unit tested for the creation of main app component and service component.
+> I have taken 2 screenshots of my work and placed it in 'assets/img' directory 
+
+
+### Thank you!
+ 
