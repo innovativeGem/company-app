@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
   constructor(private companyService: CompanyService) { }
 
   ceo = '150'; // CEOs id
-  employees = []; // Array of all employees as per their position
+  // employees = []; // Array of all employees as per their position
   compHierarchy = []; // Array sorted as per company hierarchy
   templateString = `
     <td>%col-1%</td>
@@ -39,16 +39,18 @@ export class AppComponent implements OnInit {
         return posA - posB;
       });
 
-      // console.log(empArr);
+      console.log(empArr);
 
       // Push sorted array to the main employees array.
-      empArr.forEach(curr => this.employees.push(curr));
+      // empArr.forEach(curr => this.employees.push(curr));
 
+      /*
       this.employees.forEach((el, i, arr) => {
         this.addUIElement(el);
       });
+      */
 
-      this.hierarchy(this.employees);
+      this.hierarchy(empArr);
     });
   }
 
@@ -58,19 +60,32 @@ export class AppComponent implements OnInit {
         this.compHierarchy.push(arr[i]);
         // break;
       } else if ((arr[i].employee.managerId !== '') && (arr[i].employee.managerId !== arr[i - 1].employee.managerId)) {
+        const checkEl = this.compHierarchy.includes(arr[i]);
+        console.log(checkEl);
 
-        const mId = arr[i].employee.managerId; // Manager ID
-        const nPos = this.compHierarchy.findIndex(e => e.employee.id === mId) ; // Position of the manager object
-        const eArr = arr.filter(e => e.employee.managerId === mId);
-        // this.compHierarchy = this.compHierarchy.concat(eArr);
-        console.log('nPos: ', nPos);
-        eArr.forEach((el, j) => {
-          this.compHierarchy.splice((nPos + (j + 1)), 0, el);
-        });
-        // console.log(arr[i].employee.managerId, '   ', eArr);
+        if (!checkEl) { // Check if element already exist?
+          const mId = arr[i].employee.managerId; // Manager ID
+          const nPos = this.compHierarchy.findIndex(e => e.employee.id === mId) ; // Position of the manager object
+          const eArr = arr.filter(e => e.employee.managerId === mId);
+          // this.compHierarchy = this.compHierarchy.concat(eArr);
+          console.log('nPos: ', nPos);
+          eArr.forEach((el, j) => {
+            this.compHierarchy.splice((nPos + (j + 1)), 0, el);
+          });
+          // console.log(arr[i].employee.managerId, '   ', eArr);
+        }
       }
     }
     console.log('compHierarchy: ' , this.compHierarchy);
+
+    this.addEmployees(this.compHierarchy);
+  }
+
+  addEmployees(arr) {
+    // code
+    arr.forEach(el => {
+      this.addUIElement(el);
+    });
   }
 
   hierarchyStr(e, p) {
