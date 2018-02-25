@@ -1,9 +1,12 @@
 .app-container {
-  #employee-table {
+  #employee-table, #invalid-employee-table {
     margin: 0 auto;
   }
+  #invalid-employee-table {
+    display: none;
+  }
   h1 {
-    font-size: 2.5em;
+    font-size: 1.5em;
     margin: 2% 0;
     text-align: center;
   }

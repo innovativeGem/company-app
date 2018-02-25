@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
 
   ceo = '150'; // CEOs id
   compHierarchy = []; // Array sorted as per company hierarchy
+  invalidEmployees = []; // Array for invalid employees
 
   ngOnInit() {
     this.companyService.getData().subscribe((data) => {
@@ -24,7 +25,11 @@ export class AppComponent implements OnInit {
         const pos = employee.getPosition(curr, this.ceo);
         const mId = curr.managerId;
 
-        empArr.push({employee, pos});
+        if (pos === 4) {
+          this.invalidEmployees.push({employee, pos});
+        }else {
+          empArr.push({employee, pos});
+        }
 
       });
 
@@ -34,14 +39,16 @@ export class AppComponent implements OnInit {
         return posA - posB;
       });
 
-      console.log(empArr);
+      // console.log(empArr);
 
       // Sort employees array in the order of their hierarchy.
       this.hierarchy(empArr);
+      this.hierarchyInvalidE(this.invalidEmployees);
     });
   }
 
   hierarchy(arr) {
+    const pEl = 'employee-table';
     for (let i = 0; i < arr.length; i++) {
       if (arr[i].pos === 0) {
         this.compHierarchy.push(arr[i]);
@@ -62,18 +69,28 @@ export class AppComponent implements OnInit {
           // console.log(arr[i].employee.managerId, '   ', eArr);
         }
       } else if (arr[i].pos === 3) {
-        console.log('Unsupervised: ', arr[i]);
+        // console.log('Unsupervised: ', arr[i]);
         this.compHierarchy.splice(this.compHierarchy.length, 0, arr[i]);
       }
     }
     console.log('compHierarchy: ' , this.compHierarchy);
 
-    this.addEmployees(this.compHierarchy);
+    this.addEmployees(this.compHierarchy, pEl);
   }
 
-  addEmployees(arr) {
+  hierarchyInvalidE(arr) {
+    if (arr.length > 0) {
+      const pEl = 'invalid-employee-table';
+      document.getElementById('invalid-employee-table').style.display = 'table';
+      // this.invalidEmployees.push(arr[i]);
+      console.log('Invalid employee: ' , this.invalidEmployees);
+      this.addEmployees(this.invalidEmployees, pEl);
+    }
+  }
+
+  addEmployees(arr, parentE) {
     arr.forEach(el => {
-      this.addUIElement(el);
+      this.addUIElement(el, parentE);
     });
   }
 
@@ -93,11 +110,14 @@ export class AppComponent implements OnInit {
     } else if (p === 3) {
       templateString = `<td colspan="3" style="text-align:right;">%col-1%</td>`;
       str = templateString.replace('%col-1%', e.name);
+    } else if (p === 4) {
+      templateString = `<td colspan="3" style="text-align:center;">%col-1%</td>`;
+      str = templateString.replace('%col-1%', e.name);
     }
     return str;
   }
 
-  addUIElement(e) {
+  addUIElement(e, parentE) {
     const employee = e.employee;
     const position = e.pos;
     const mId = employee.managerId;
@@ -108,7 +128,7 @@ export class AppComponent implements OnInit {
     trNode.setAttribute('id', `id${employee.id}`);
     trNode.innerHTML = this.hierarchyStr(employee, position);
 
-    document.getElementById('employee-table').appendChild(trNode);
+    document.getElementById(parentE).appendChild(trNode);
   }
 
 }
@@ -125,7 +145,7 @@ class Employee {
 
     // initial values
     this.name = name;
-    this.id = id;
+    this.id = id || '';
     this.managerId = managerId || '';
     this.position = 'worker';
 
@@ -134,19 +154,23 @@ class Employee {
     this.hierarchyOrder.set('manager', 1);
     this.hierarchyOrder.set('worker', 2);
     this.hierarchyOrder.set('unsupervised worker', 3);
+    this.hierarchyOrder.set('invalid manager', 4);
   }
 
   // Company hierarchy logic
   getPosition(e, cId) {
     const mId = e.managerId;
+    const eId = e.id;
     if (e.id === cId) { // If the employee id matched CEO id, that employee is the CEO.
       return this.hierarchyOrder.get('ceo');
-    } else if (mId === cId) { // If the employee is reporting to the CEO, that employee is the manager.
+    } else if ((eId) && (mId === cId)) { // If the employee is reporting to the CEO, that employee is the manager.
       return this.hierarchyOrder.get('manager');
     } else if ((mId) && (mId !== cId)) { // If the employee has a managerId and is not reporting to the CEO, that employee is a worker.
       return this.hierarchyOrder.get('worker');
-    } else if ((mId === '') && (e.id !== cId)) {
+    } else if ((mId === '') && (e.id !== cId)) { // Employee with no manager.
       return this.hierarchyOrder.get('unsupervised worker');
+    } else if ((eId === '') && (mId === cId)) {
+      return this.hierarchyOrder.get('invalid manager');
     }
   }
 }
