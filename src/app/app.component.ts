@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CompanyService } from './service/company.service';
-import { EmployeeComponent } from './employee/employee.component';
 
 
 @Component({
@@ -12,12 +11,7 @@ export class AppComponent implements OnInit {
   constructor(private companyService: CompanyService) { }
 
   ceo = '150'; // CEOs id
-  // employees = []; // Array of all employees as per their position
   compHierarchy = []; // Array sorted as per company hierarchy
-  templateString = `
-    <td>%col-1%</td>
-    <td>%col-2%</td>
-    <td>%col-3%</td>`;
 
   ngOnInit() {
     this.companyService.getData().subscribe((data) => {
@@ -27,13 +21,14 @@ export class AppComponent implements OnInit {
       // Create new employee from the data object.
       data.map((curr, i, arr) => {
         const employee = new Employee(curr.name, curr.id, curr.managerId);
-        const pos = employee.getPosition(curr);
+        const pos = employee.getPosition(curr, this.ceo);
         const mId = curr.managerId;
 
         empArr.push({employee, pos});
 
       });
 
+      // Sort temperory employees array as per their position.
       empArr.sort(function(a, b){
         const posA = a.pos, posB = b.pos;
         return posA - posB;
@@ -41,15 +36,7 @@ export class AppComponent implements OnInit {
 
       console.log(empArr);
 
-      // Push sorted array to the main employees array.
-      // empArr.forEach(curr => this.employees.push(curr));
-
-      /*
-      this.employees.forEach((el, i, arr) => {
-        this.addUIElement(el);
-      });
-      */
-
+      // Sort employees array in the order of their hierarchy.
       this.hierarchy(empArr);
     });
   }
@@ -74,6 +61,9 @@ export class AppComponent implements OnInit {
           });
           // console.log(arr[i].employee.managerId, '   ', eArr);
         }
+      } else if (arr[i].pos === 3) {
+        console.log('Unsupervised: ', arr[i]);
+        this.compHierarchy.splice(this.compHierarchy.length, 0, arr[i]);
       }
     }
     console.log('compHierarchy: ' , this.compHierarchy);
@@ -82,7 +72,6 @@ export class AppComponent implements OnInit {
   }
 
   addEmployees(arr) {
-    // code
     arr.forEach(el => {
       this.addUIElement(el);
     });
@@ -90,13 +79,20 @@ export class AppComponent implements OnInit {
 
   hierarchyStr(e, p) {
     let str;
+    let templateString = `
+    <td>%col-1%</td>
+    <td>%col-2%</td>
+    <td>%col-3%</td>`;
 
     if (p === 0) {
-      str = this.templateString.replace('%col-1%', e.name).replace('%col-2%', '').replace('%col-3%', '');
+      str = templateString.replace('%col-1%', e.name).replace('%col-2%', '').replace('%col-3%', '');
     } else if (p === 1) {
-      str = this.templateString.replace('%col-1%', '').replace('%col-2%', e.name).replace('%col-3%', '');
+      str = templateString.replace('%col-1%', '').replace('%col-2%', e.name).replace('%col-3%', '');
     } else if (p === 2) {
-      str = this.templateString.replace('%col-1%', '').replace('%col-2%', '').replace('%col-3%',  e.name);
+      str = templateString.replace('%col-1%', '').replace('%col-2%', '').replace('%col-3%',  e.name);
+    } else if (p === 3) {
+      templateString = `<td colspan="3" style="text-align:right;">%col-1%</td>`;
+      str = templateString.replace('%col-1%', e.name);
     }
     return str;
   }
@@ -124,7 +120,7 @@ class Employee {
   managerId: any;
   position: string;
   hierarchyOrder = new Map();
-  ceoId = '150'; // Company id of the CEO
+  // ceoId = '150'; // Company id of the CEO
   constructor(name, id, managerId) {
 
     // initial values
@@ -137,16 +133,20 @@ class Employee {
     this.hierarchyOrder.set('ceo', 0);
     this.hierarchyOrder.set('manager', 1);
     this.hierarchyOrder.set('worker', 2);
+    this.hierarchyOrder.set('unsupervised worker', 3);
   }
 
   // Company hierarchy logic
-  getPosition(e) {
-    if (e.id === this.ceoId) {
+  getPosition(e, cId) {
+    const mId = e.managerId;
+    if (e.id === cId) { // If the employee id matched CEO id, that employee is the CEO.
       return this.hierarchyOrder.get('ceo');
-    } else if (e.managerId === this.ceoId) {
+    } else if (mId === cId) { // If the employee is reporting to the CEO, that employee is the manager.
       return this.hierarchyOrder.get('manager');
-    } else if (e.managerId !== this.ceoId) {
+    } else if ((mId) && (mId !== cId)) { // If the employee has a managerId and is not reporting to the CEO, that employee is a worker.
       return this.hierarchyOrder.get('worker');
+    } else if ((mId === '') && (e.id !== cId)) {
+      return this.hierarchyOrder.get('unsupervised worker');
     }
   }
 }
