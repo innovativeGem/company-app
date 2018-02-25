@@ -2,31 +2,37 @@
   {
     "name": "Alan",
     "id": "100",
-    "manager-id": "150"
+    "managerId": "150",
+    "position": "manager"
   },
   {
     "name": "Martin",
     "id": "220",
-    "manager-id": "100"
+    "managerId": "100",
+    "position": "worker"
   },
   {
     "name": "Jamie",
     "id": "150",
-    "manager-id": ""
+    "managerId": "",
+    "position": "ceo"
   },
   {
     "name": "Alex",
     "id": "275",
-    "manager-id": "100"
+    "managerId": "100",
+    "position": "worker"
   },
   {
     "name": "Steve",
     "id": "400",
-    "manager-id": "150"
+    "managerId": "150",
+    "position": "manager"
   },
   {
     "name": "David",
     "id": "190",
-    "manager-id": "400"
+    "managerId": "400",
+    "position": "worker"
   }
 ]
